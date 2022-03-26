@@ -51,22 +51,23 @@ def get_total_and_highest_expenses():
     expenses_dict = {}
     all_expenses = expenses.get_all_values()
     if len(all_expenses) > 1:
-        for index in range(len(all_expenses)):
+        for index, value in enumerate(all_expenses):
             if index > 0:
                 total = 0
-                inner = all_expenses[index]
-                for index_a in range(len(inner)):
+                inner = value
+                for index_a, value_a in enumerate(inner):
                     if index_a > 0:
-                        total += int(inner[index_a])
-                        total_expenses += int(inner[index_a])
+                        total += int(value_a)
+                        total_expenses += int(value_a)
                 expenses_dict.update({inner[0]: total})
         global HIGHEST_EXPENSES
         HIGHEST_EXPENSES = max(expenses_dict, key=expenses_dict.get)
     else:
         total_expenses = """
-        Expenses is currently empty. Enter update to add values.\n
+        Expenses is currently empty. Enter update to add values.
         """
-    print(f'Total Expenses: {total_expenses}\n')
+    print(f'Total Expenses: {total_expenses}')
+    print('___________________________')
     return total_expenses
 
 
@@ -80,33 +81,37 @@ def get_total_income():
     all_income = income.get_all_values()
 
     if len(all_income) > 1:
-        for index in range(len(all_income)):
+        for index, value in enumerate(all_income):
             if index > 0:
-                inner = all_income[index]
-                for index_a in range(len(inner)):
+                inner = value
+                for index_a, value_a in enumerate(inner):
                     if index_a > 0:
-                        total_income += int(inner[index_a])
+                        total_income += int(value_a)
     else:
         total_income = """
-        Income is currently empty.Enter "Update" to add values.\n
+        Income is currently empty.Enter "Update" to add values.
         """
-    print(f'Total Income: {total_income}\n')
+    print(f'Total Income: {total_income}')
+    print('_____________________________')
     return total_income
 
 
 def check_profit_or_loss():
     expenses = get_total_and_highest_expenses()
     income = get_total_income()
-    if income > expenses:
-      print('Your money habits look good.')
-      print('Your total income is greater than your expenses. You are doing well.')
-      print(f'Your total income is {income}. While your total expenses is {expenses}.')
-    elif expenses > income:
-      print('You seem to be spending too much.')
-      print(f'Your total expenses is {expenses}. While your total income is {income}.')
-    else:
-      print('Your income and expense are equal.')
-    print('___________________________________________')
+    if isinstance(income, int)  and isinstance(expenses, int) :
+        if income > expenses:
+          print('Your money habits look good.')
+          print('Your total income is greater than your expenses. You are doing well.')
+          print(f'Your total income is {income}. While your total expenses is {expenses}.')
+        elif expenses > income:
+          print('You seem to be spending too much.')
+          print(f'Your total expenses is {expenses}. While your total income is {income}.')
+        else:
+          print('Your income and expense are equal.')
+        print('___________________________________________')
+        
+        
 def get_all_income():
     """
     clear the terminal, get income from spread sheet
@@ -151,8 +156,6 @@ def get_all_expenses():
         print(
           '''
           Expenses has been cleared.
-          You need to reconstruct the sheet from it's header with "Update"
-          ___________________________________\n
           '''
         )
 
@@ -228,8 +231,9 @@ def initialize_update():
     while initialize:
         section = input(
           '''
-          Enter "Income" to update your income:\n
-          Enter "Expenses" to update your expenses:\n
+          Enter "Income" to update your income:
+          Enter "Expenses" to update your expenses:
+          Enter "Main" to return to the main page: \n
           '''
         )
         section = convert_to_lowercase(section)
@@ -254,7 +258,7 @@ def initialize_update():
             row = input(
               f'''
               Data accepted
-              __________________________________\n\n
+              __________________________________\n
               Enter "New Row" to add inputed values to a new {section}
               income or expenses row:\n
               The row starts from the very top (the heading)
@@ -268,7 +272,7 @@ def initialize_update():
                 column = input('''
 
                 Row value accepted
-                __________________________________\n\n
+                __________________________________\n
                 Enter the column number for example "1"
                 to update the first column:\n
                 Enter "Main" to return to the main page:\n
@@ -286,20 +290,25 @@ def clear_worksheet():
     TO ADD DOCSTRING COMMENT HERE
     """
     verification = input(
-            '''Warning! all data including worksheet header will be lost\n
+            '''Warning! all data will be lost\n
             This cannot be undone\n
-            You will need to reconstruct the sheet starting
-            from its header for future usage with "update"\n
             To clear income enter  "Clear Income".\n
             To clear expenses enter "Clear Expenses"\n
             To return to main type "Main"\n
             To end the process enter exit\n
             ''')
+    sHEET_HEADER = ['DESCRIPTION', 'JAN-MARCH', 'APRIL-JUNE', 'JULY-SEP', 'OCT-DEC' ]
     if convert_to_lowercase(verification) == "clear income":
-        SHEET.worksheet('income').clear()
+        worksheet = SHEET.worksheet('income')
+        worksheet.clear()
+        worksheet.append_row(sHEET_HEADER)
         get_all_income()
+
+
     elif convert_to_lowercase(verification) == "clear expenses":
-        SHEET.worksheet('expenses').clear()
+        worksheet = SHEET.worksheet('expenses')
+        worksheet.clear()
+        worksheet.append_row(sHEET_HEADER)
         get_all_expenses()
 
 
@@ -347,15 +356,15 @@ def initialize_app():
     initialize = True
     while initialize:
         print('Welcome to the Budget App!\n')
-        print('Please enter "Update" to make changes to the budget.\n')
-        print('Please enter "Income" to display all recorded income.\n')
-        print('Please enter "Expenses" to display all recorded expenses.\n')
-        print('Please enter "Highest" to get your highest expenses.\n')
-        print('Please enter "All" to display all recorded income and expenses.\n')
-        print('Please enter "Status" to know if you are making more money or spending more money')
-        print('Enter "clear" to clear worksheet.\n')
-        print('To end the process please enter "Exit".\n')
-        user_input = input('Enter your data here:\n')
+        print('Please enter "Update" to make changes to the budget.')
+        print('Please enter "Income" to display all recorded income.')
+        print('Please enter "Expenses" to display all recorded expenses.')
+        print('Please enter "Highest" to get your highest expenses.')
+        print('Please enter "All" to display all recorded income and expenses.')
+        print('Please enter "Status" to know if you are making more money or spending more money.')
+        print('Enter "clear" to clear worksheet.')
+        print('To end the process please enter "Exit".')
+        user_input = input('Enter your data here:')
         if check_input_type(user_input) is True:
             check_entered_values(convert_to_lowercase(user_input))
 
